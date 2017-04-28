@@ -4,7 +4,7 @@ Defining non trivial transformations from incoming maps to Structs.
 
 #Quick example
 
-`
+```
   defmodule Bar do
     use ExMapper.DefMapping
     defstruct [:baz]
@@ -27,13 +27,13 @@ Defining non trivial transformations from incoming maps to Structs.
       override :bar, value: one(%Structs.Bar{}, Structs.Bar.mappings)
     end
   end
-`
+```
 
 Then:
 
-`
+```
   ExMapper.map(%Structs.Foo{}, input, Structs.Foo.mappings)
-`
+```
 
 #Usage
 
