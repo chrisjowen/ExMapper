@@ -26,8 +26,7 @@ defmodule ExMapper do
       nil -> Map.fetch(map, fun.(key))
       %Override{key: :default} -> Map.fetch(map, fun.(key))
       %Override{key: key_fn} when is_function(key_fn) -> Map.fetch(map, key_fn.(key))
-      %Override{key: new_key} ->
-        Map.fetch(map, new_key)
+      %Override{key: new_key} -> Map.fetch(map, new_key)
     end
   end
 

@@ -131,8 +131,8 @@ defmodule ExMapperSpec do
 
   it "Can map from dsl options" do
     input = %{
-        ab: "adssad",
-        bar: %{
+        "alt_a" => "adssad",
+        "bar" => %{
           "KEY_baz" => 100,
         }
     }

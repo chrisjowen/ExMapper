@@ -1,4 +1,4 @@
-# Exmapper
+# ExMapper
 
 Defining non trivial transformations from incoming maps to Structs.
 
