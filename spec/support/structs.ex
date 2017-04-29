@@ -21,7 +21,7 @@ defmodule Structs do
     defstruct [:bar, :a]
 
     defmapping do
-      keys :stringified
+      keys &Atom.to_string/1
       override :a, key: "alt_a"
       override :bar, value: one(%Structs.Bar{}, Structs.Bar.mappings)
     end

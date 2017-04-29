@@ -28,8 +28,17 @@ defmodule ExMapper.DefMapping do
   end
 
   defmacro keys(val) do
+    func_name = "keys_func" |> String.to_atom
+    use_value_default = is_atom(val)
+
     quote do
-      @mappings Map.put(@mappings, :keys, unquote(val))
+      if(!unquote(use_value_default)) do
+        localize_function(unquote(func_name), unquote(val))
+      end
+
+      @mappings Map.put(@mappings, :keys,
+        if(unquote(use_value_default), do: unquote(val), else: &__MODULE__.unquote(func_name)/1)
+      )
     end
   end
 
@@ -41,7 +50,7 @@ defmodule ExMapper.DefMapping do
 
     # Note: Akward that we must do this here, but we cannot evaluate the value of key/value in quote incase its a missing local function
     use_key_default = key == :default
-    use_value_default = value ==:default
+    use_value_default = value == :default
 
     quote do
       localize_function(unquote(key_func_name), unquote(key))
