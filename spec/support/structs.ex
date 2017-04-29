@@ -9,11 +9,12 @@ defmodule Structs do
 
     defmapping do
       override :baz, key: &string_key_prefix/1, value: &times_two/1
+
+
     end
 
     defp times_two(input), do: input * 2
     defp string_key_prefix(key), do: "KEY_#{key}"
-
   end
 
 
@@ -22,6 +23,7 @@ defmodule Structs do
     defstruct [:bar, :a]
 
     defmapping do
+      override :a, key: :ab
       override :bar, value: one(%Structs.Bar{}, Structs.Bar.mappings)
     end
   end

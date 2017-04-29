@@ -9,6 +9,7 @@ defmodule ExMapper.DefMapping do
       def many(struct, opts \\ %ExMapper.Options{}), do: &many(struct, &1, opts)
       defp many(struct, value, opts) when is_list(value), do: value |> Enum.map(&one(struct, &1, opts))
       defp many(_, _, _), do: []
+
       def one(struct, opts \\ %ExMapper.Options{}), do: &one(struct, &1, opts)
       defp one(struct, val, opts), do: ExMapper.map(struct, val, opts)
     end
@@ -32,7 +33,25 @@ defmodule ExMapper.DefMapping do
     end
   end
 
-  defmacro wrap(name, defenition) do
+  defmacro override(struct_key, override) do
+    key = Keyword.get(override, :key, :default)
+    value = Keyword.get(override, :value, :default)
+    key_func_name = "#{struct_key}_key" |> String.to_atom
+    value_func_name = "#{struct_key}_value" |> String.to_atom
+
+    quote do
+      localize_function(unquote(key_func_name), unquote(key))
+      localize_function(unquote(value_func_name), unquote(value))
+      overrides = Map.put(Map.get(@mappings, :overrides), unquote(struct_key), %ExMapper.Override{
+        key: &__MODULE__.unquote(key_func_name)/1,
+        value: &__MODULE__.unquote(value_func_name)/1
+      })
+      @mappings Map.put(@mappings, :overrides, overrides)
+    end
+  end
+
+
+  defmacro localize_function(name, defenition) do
     if(is_tuple(defenition)) do
       quote do
         def unquote(name)(input) do
@@ -41,25 +60,14 @@ defmodule ExMapper.DefMapping do
       end
     else
       quote do
-        def unquote(name)(input), do: input
+        def unquote(name)(input) do
+          case unquote(defenition) do
+            :default -> input
+            non_default -> non_default
+          end
+        end
       end
     end
   end
 
-  defmacro override(struct_key, override) do
-    key = Keyword.get(override, :key, :default)
-    value = Keyword.get(override, :value, :default)
-    key_func_name = "#{struct_key}_key" |> String.to_atom
-    value_func_name = "#{struct_key}_value" |> String.to_atom
-
-    quote do
-      wrap(unquote(key_func_name), unquote(key))
-      wrap(unquote(value_func_name), unquote(value))
-      overrides = Map.put(Map.get(@mappings, :overrides), unquote(struct_key), %ExMapper.Override{
-        key: &__MODULE__.unquote(key_func_name)/1,
-        value: &__MODULE__.unquote(value_func_name)/1
-      })
-      @mappings Map.put(@mappings, :overrides, overrides)
-    end
-  end
 end
