@@ -1,4 +1,5 @@
-# ExMapper
+ExMapper
+--------
 
 Defining non trivial transformations from incoming maps to Structs.
 
@@ -24,7 +25,8 @@ Defining non trivial transformations from incoming maps to Structs.
     defstruct [:bar, :a]
 
     defmapping do
-      override :bar, value: one(%Structs.Bar{}, Structs.Bar.mappings)
+      keys: :atomized
+      override :bar, value: one(%Bar{}, Bar.mappings)
     end
   end
 ```
@@ -32,10 +34,11 @@ Defining non trivial transformations from incoming maps to Structs.
 Then:
 
 ```
-  ExMapper.map(%Structs.Foo{}, input, Structs.Foo.mappings)
+  ExMapper.map(%Foo{}, input, Foo.mappings)
 ```
 
-#Usage
+Usage
+------
 
 To define a mapping use the `ExMapper.DefMapping` DSL and the `defmapping` macro. The result is the module will have a
 `mappings` function which you can pass to ExMapper.
@@ -51,8 +54,8 @@ Override options can include:
 - `key:` either a string/atom value to query the input map. Or similarly with the overall keys definition you can specify a function in the format `struct_key -> expected_key`
 - `value:` either a string/atom value to use despite whats in the input map. Or more useful a function in the format `input_value -> transformed_value`
 
-#Notes
+Notes
+------
 
 - Mappings and structs do not, and really should not be in the same module if you have several mapping definitions for a struct
 - Helper functions `one` and `many` allow mapping to nested Structs
-- This is a hack!!
